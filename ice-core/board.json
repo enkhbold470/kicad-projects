@@ -1,0 +1,672 @@
+{
+  "name": "ice_core",
+  "title": "Ice Core - iCE40UP5K FPGA + RP2040 dev board, 6 layers",
+  "revision": "A",
+  "brief": "FPGA + MCU dev board on 6 layers: a Lattice iCE40UP5K-SG48 booting from a W25Q32 SPI flash, with an 8 MB APS6404L QSPI PSRAM on its user I/O, three 12-pin Pmod host ports and its dedicated RGB LED driver on a common-anode RGB LED; an RP2040 with its own QSPI flash and 12 MHz crystal acts as the USB bridge and FPGA programmer (it drives CRESET_B, reads CDONE, shares the configuration SPI and clocks the FPGA from GPOUT0). USB-C with USBLC6 ESD; an AP63203 buck makes 3.3 V and an AP2112K-1.2 LDO the 1.2 V core with the iCE40 VCCPLL filter; BOOT, RESET and USER buttons, PWR / ACT / DONE LEDs, four M3 holes.",
+  "blocks": [
+    {
+      "block": "usb_c_data_5v",
+      "as": "usb",
+      "title": "USB-C: 5 V in + USB 2.0 data",
+      "nets": {
+        "USB_DP": "USB_DP",
+        "USB_DM": "USB_DM"
+      }
+    },
+    {
+      "block": "usb_esd_usblc6",
+      "as": "esd",
+      "title": "USB ESD clamp",
+      "nets": {
+        "USB_DP": "USB_DP",
+        "USB_DM": "USB_DM"
+      }
+    },
+    {
+      "block": "ice_buck_ap63203",
+      "as": "buck",
+      "title": "3.3 V buck (AP63203)"
+    },
+    {
+      "block": "ice_ldo_ap2112k_1v2",
+      "as": "core",
+      "title": "1.2 V core LDO (AP2112K-1.2)"
+    },
+    {
+      "block": "ice_mcu_rp2040",
+      "as": "mcu",
+      "title": "RP2040: USB bridge and FPGA programmer",
+      "nets": {
+        "USB_DP": "USB_DP",
+        "USB_DM": "USB_DM",
+        "BOOTSEL": "BOOTSEL",
+        "RUN": "RUN",
+        "QSPI_SS": "QSPI_SS",
+        "QSPI_SCLK": "QSPI_SCLK",
+        "QSPI_SD0": "QSPI_SD0",
+        "QSPI_SD1": "QSPI_SD1",
+        "QSPI_SD2": "QSPI_SD2",
+        "QSPI_SD3": "QSPI_SD3"
+      },
+      "pinNets": {
+        "U?.27": "CFG_CIPO",
+        "U?.28": "CFG_SS",
+        "U?.29": "CFG_SCK",
+        "U?.30": "CFG_COPI",
+        "U?.31": "FPGA_CRESET",
+        "U?.32": "FPGA_CLK",
+        "U?.34": "FPGA_CDONE",
+        "U?.36": "LED_DONE",
+        "U?.37": "LED_ACT"
+      }
+    },
+    {
+      "block": "ice_boot_flash_w25q32",
+      "as": "bflash",
+      "title": "RP2040 QSPI boot flash",
+      "nets": {
+        "CS": "QSPI_SS",
+        "CLK": "QSPI_SCLK",
+        "IO0": "QSPI_SD0",
+        "IO1": "QSPI_SD1",
+        "IO2": "QSPI_SD2",
+        "IO3": "QSPI_SD3"
+      }
+    },
+    {
+      "block": "ice_fpga_ice40up5k",
+      "as": "fpga",
+      "title": "iCE40UP5K-SG48",
+      "nets": {
+        "SPI_SO": "CFG_COPI",
+        "SPI_SI": "CFG_CIPO",
+        "SPI_SCK": "CFG_SCK",
+        "SPI_SS": "CFG_SS",
+        "CRESET": "FPGA_CRESET",
+        "CDONE": "FPGA_CDONE",
+        "RGB0": "LED_R",
+        "RGB1": "LED_G",
+        "RGB2": "LED_B"
+      },
+      "pinNets": {
+        "U?.35": "FPGA_CLK",
+        "U?.3": "PSRAM_CS",
+        "U?.4": "PSRAM_SCK",
+        "U?.6": "PSRAM_SIO0",
+        "U?.9": "PSRAM_SIO1",
+        "U?.10": "PSRAM_SIO2",
+        "U?.11": "PSRAM_SIO3",
+        "U?.12": "BTN_USER",
+        "U?.2": "PA1",
+        "U?.47": "PA2",
+        "U?.45": "PA3",
+        "U?.43": "PA4",
+        "U?.48": "PA7",
+        "U?.46": "PA8",
+        "U?.44": "PA9",
+        "U?.42": "PA10",
+        "U?.25": "PB1",
+        "U?.21": "PB2",
+        "U?.19": "PB3",
+        "U?.13": "PB4",
+        "U?.26": "PB7",
+        "U?.23": "PB8",
+        "U?.20": "PB9",
+        "U?.18": "PB10",
+        "U?.38": "PC1",
+        "U?.36": "PC2",
+        "U?.32": "PC3",
+        "U?.28": "PC4",
+        "U?.37": "PC7",
+        "U?.34": "PC8",
+        "U?.31": "PC9",
+        "U?.27": "PC10"
+      }
+    },
+    {
+      "block": "ice_cfg_flash_w25q32",
+      "as": "cflash",
+      "title": "FPGA configuration flash",
+      "nets": {
+        "CS": "CFG_SS",
+        "DO": "CFG_CIPO",
+        "DI": "CFG_COPI",
+        "CLK": "CFG_SCK"
+      }
+    },
+    {
+      "block": "ice_psram_aps6404l",
+      "as": "psram",
+      "title": "8 MB QSPI PSRAM",
+      "nets": {
+        "CE": "PSRAM_CS",
+        "SCLK": "PSRAM_SCK",
+        "SIO0": "PSRAM_SIO0",
+        "SIO1": "PSRAM_SIO1",
+        "SIO2": "PSRAM_SIO2",
+        "SIO3": "PSRAM_SIO3"
+      }
+    },
+    {
+      "block": "ice_rgb_led_3528",
+      "as": "rgb",
+      "title": "RGB LED on the iCE40 RGB driver",
+      "nets": {
+        "RK": "LED_R",
+        "GK": "LED_G",
+        "BK": "LED_B"
+      }
+    },
+    {
+      "block": "ice_pmod_host_2x6",
+      "as": "pmod_a",
+      "title": "Pmod A",
+      "values": {
+        "J?": "PMOD_A"
+      },
+      "pinNets": {
+        "J?.11": "PA1",
+        "J?.9": "PA2",
+        "J?.7": "PA3",
+        "J?.5": "PA4",
+        "J?.12": "PA7",
+        "J?.10": "PA8",
+        "J?.8": "PA9",
+        "J?.6": "PA10"
+      }
+    },
+    {
+      "block": "ice_pmod_host_2x6",
+      "as": "pmod_b",
+      "title": "Pmod B",
+      "values": {
+        "J?": "PMOD_B"
+      },
+      "pinNets": {
+        "J?.11": "PB1",
+        "J?.9": "PB2",
+        "J?.7": "PB3",
+        "J?.5": "PB4",
+        "J?.12": "PB7",
+        "J?.10": "PB8",
+        "J?.8": "PB9",
+        "J?.6": "PB10"
+      }
+    },
+    {
+      "block": "ice_pmod_host_2x6",
+      "as": "pmod_c",
+      "title": "Pmod C",
+      "values": {
+        "J?": "PMOD_C"
+      },
+      "pinNets": {
+        "J?.11": "PC1",
+        "J?.9": "PC2",
+        "J?.7": "PC3",
+        "J?.5": "PC4",
+        "J?.12": "PC7",
+        "J?.10": "PC8",
+        "J?.8": "PC9",
+        "J?.6": "PC10"
+      }
+    },
+    {
+      "block": "tactile_button",
+      "as": "boot",
+      "title": "BOOTSEL button (RP2040)",
+      "nets": {
+        "SIG": "BOOTSEL"
+      },
+      "values": {
+        "SW?": "BOOT"
+      }
+    },
+    {
+      "block": "tactile_button",
+      "as": "reset",
+      "title": "RESET button (RP2040 RUN)",
+      "nets": {
+        "SIG": "RUN"
+      },
+      "values": {
+        "SW?": "RESET"
+      }
+    },
+    {
+      "block": "tactile_button",
+      "as": "user",
+      "title": "USER button (FPGA)",
+      "nets": {
+        "SIG": "BTN_USER"
+      },
+      "values": {
+        "SW?": "USER"
+      }
+    },
+    {
+      "block": "led_indicator",
+      "as": "led_pwr",
+      "title": "3V3 power LED",
+      "values": {
+        "D?": "Green (PWR)",
+        "R?": "2.2k"
+      }
+    },
+    {
+      "block": "gpio_led",
+      "as": "led_act",
+      "title": "RP2040 activity LED (GPIO25)",
+      "nets": {
+        "SIG": "LED_ACT"
+      },
+      "values": {
+        "D?": "Red (ACT)"
+      }
+    },
+    {
+      "block": "gpio_led",
+      "as": "led_done",
+      "title": "FPGA DONE LED (RP2040 GPIO24)",
+      "nets": {
+        "SIG": "LED_DONE"
+      },
+      "values": {
+        "D?": "Orange (DONE)"
+      }
+    },
+    {
+      "block": "ice_mounting_hole_m3",
+      "as": "h1",
+      "title": "Mounting hole"
+    },
+    {
+      "block": "ice_mounting_hole_m3",
+      "as": "h2",
+      "title": "Mounting hole"
+    },
+    {
+      "block": "ice_mounting_hole_m3",
+      "as": "h3",
+      "title": "Mounting hole"
+    },
+    {
+      "block": "ice_mounting_hole_m3",
+      "as": "h4",
+      "title": "Mounting hole"
+    }
+  ],
+  "pwrFlags": [
+    "GND",
+    "VBUS",
+    "3V3"
+  ],
+  "netClasses": [
+    {
+      "name": "VIN",
+      "nets": [
+        "VBUS"
+      ],
+      "track": 0.4,
+      "clearance": 0.15,
+      "via": [
+        0.5,
+        0.3
+      ],
+      "why": "USB input current; every VBUS pad (receptacle, USBLC6, buck, LDO) takes 0.4 mm"
+    },
+    {
+      "name": "RAIL",
+      "nets": [
+        "3V3",
+        "1V2"
+      ],
+      "track": 0.2,
+      "clearance": 0.15,
+      "via": [
+        0.5,
+        0.3
+      ],
+      "why": "3V3 has 54 pins and must be routed as tracks before any pour; 0.2 mm (IPC-2221 at 10 C rise: 0.74 A on 1 oz outer copper, 0.23 A on 0.5 oz inner, route.ipc2221_amps) leaves room for the signals, and In3 becomes a solid 3V3 plane once routing reaches 0 open. The 1.2 V core draws tens of mA"
+    }
+  ],
+  "board": {
+    "width": 80.0,
+    "height": 60.0,
+    "corner_radius": 2.0,
+    "layers": 6,
+    "origin": [
+      100.0,
+      100.0
+    ],
+    "rules": {
+      "clearance": 0.15,
+      "track": 0.15,
+      "via": [
+        0.5,
+        0.3
+      ],
+      "edge_clearance": 0.5,
+      "hole_to_hole": 0.5,
+      "min_through_hole": 0.3,
+      "min_track": 0.1,
+      "why_clearance": "the RP2040's QFN-56 has 0.2 mm pads at 0.4 mm pitch: 0.15 mm track and clearance enter a pad without touching its neighbours; JLCPCB's multilayer line builds 0.09 mm. 0.127 mm was measured and refused: the pipeline's hole clearance stays 0.25 mm, and the run gave 123 hole_clearance and 6 track_width DRC rows",
+      "why_min_track": "Freerouting may neck a track to 0.10 mm into a fine-pitch pad; JLCPCB's multilayer line builds 0.09 mm"
+    },
+    "planes": {
+      "In1.Cu": "GND",
+      "In3.Cu": "auto",
+      "In4.Cu": "GND"
+    },
+    "notes": "6 layers: F.Cu signal / In1 GND plane / In2 signal / In3 power plane (the dominant rail, 'auto') / In4 GND plane / B.Cu signal. Planes are Specctra power layers while routing, so Freerouting routes on F.Cu, In2 and B.Cu; every plane is poured only after routing measures 0 open."
+  },
+  "placement": {
+    "usb:J?": {
+      "edge": "top",
+      "x": -23.0,
+      "overhang": 0.6,
+      "why": "plug enters from the top edge, shell 0.6 mm proud"
+    },
+    "pmod_a:J?": {
+      "edge": "top",
+      "x": 10.0,
+      "overhang": 0.0,
+      "why": "Pmod A opens on the top edge, facing the FPGA's top-side pins"
+    },
+    "pmod_c:J?": {
+      "edge": "right",
+      "y": 0.0,
+      "overhang": 0.0,
+      "why": "Pmod C opens on the right edge, facing the FPGA's right-side pins"
+    },
+    "pmod_b:J?": {
+      "edge": "bottom",
+      "x": 10.0,
+      "overhang": 0.0,
+      "why": "Pmod B opens on the bottom edge, facing the FPGA's bottom-side pins"
+    },
+    "h1:H?": {
+      "lock": [
+        3.5,
+        3.5
+      ],
+      "from_center": false,
+      "rot": 0,
+      "why": "M3 hole, top-left corner"
+    },
+    "h2:H?": {
+      "lock": [
+        76.5,
+        3.5
+      ],
+      "from_center": false,
+      "rot": 0,
+      "why": "M3 hole, top-right corner"
+    },
+    "h3:H?": {
+      "lock": [
+        3.5,
+        56.5
+      ],
+      "from_center": false,
+      "rot": 0,
+      "why": "M3 hole, bottom-left corner"
+    },
+    "h4:H?": {
+      "lock": [
+        76.5,
+        56.5
+      ],
+      "from_center": false,
+      "rot": 0,
+      "why": "M3 hole, bottom-right corner"
+    },
+    "fpga:U?": {
+      "at": [
+        50.0,
+        30.0
+      ],
+      "why": "FPGA in the middle of its three Pmod ports"
+    },
+    "fpga:C6?": {
+      "at": [
+        45.2,
+        34.8
+      ],
+      "why": "3V3 100 nF on the bottom-left corner diagonal, clear of the left-side escape"
+    },
+    "fpga:C2?": {
+      "at": [
+        45.2,
+        25.2
+      ],
+      "why": "VCC (pin 5) 100 nF on the top-left corner diagonal"
+    },
+    "fpga:C3?": {
+      "at": [
+        54.8,
+        25.2
+      ],
+      "why": "VCC (pin 30) 100 nF on the top-right corner diagonal"
+    },
+    "fpga:C1?": {
+      "at": [
+        40.5,
+        14.5
+      ],
+      "why": "1.2 V bulk 4.7 uF beside the LDO, off the FPGA's escape channels; the 100 nF caps stay at the pins"
+    },
+    "fpga:C10?": {
+      "at": [
+        36.5,
+        5.5
+      ],
+      "why": "3.3 V bank bulk 4.7 uF beside the buck output; In3 carries 3V3 to the FPGA after routing"
+    },
+    "fpga:C11?": {
+      "at": [
+        36.5,
+        8.5
+      ],
+      "why": "second 3.3 V bank bulk 4.7 uF beside the buck output"
+    },
+    "fpga:R2?": {
+      "at": [
+        26.5,
+        35.5
+      ],
+      "why": "CRESET_B pull-up by the RP2040 GPIO20 that drives it, not in the FPGA's escape"
+    },
+    "fpga:R3?": {
+      "at": [
+        26.5,
+        37.5
+      ],
+      "why": "CDONE pull-up by the RP2040 GPIO22 that reads it"
+    },
+    "fpga:R4?": {
+      "at": [
+        30.0,
+        45.5
+      ],
+      "why": "SPI_SS_B pull-up under the configuration flash"
+    },
+    "fpga:R5?": {
+      "at": [
+        33.0,
+        45.5
+      ],
+      "why": "SPI_SCK pull-up under the configuration flash"
+    },
+    "mcu:U?": {
+      "at": [
+        18.0,
+        31.0
+      ],
+      "why": "RP2040 under the USB-C, its SPI0 corner toward the FPGA"
+    },
+    "bflash:U?": {
+      "at": [
+        10.5,
+        22.0
+      ],
+      "why": "boot flash at the RP2040's top-left corner, where its QSPI pins are"
+    },
+    "psram:U?": {
+      "at": [
+        34.5,
+        23.5
+      ],
+      "why": "PSRAM between the chips, beside the FPGA's left-side pins"
+    },
+    "cflash:U?": {
+      "at": [
+        34.5,
+        40.0
+      ],
+      "why": "configuration flash between the RP2040's SPI0 pins and the FPGA's SPI pins"
+    },
+    "buck:U?": {
+      "at": [
+        27.0,
+        6.0
+      ],
+      "why": "buck between the USB-C and Pmod A, close to VBUS"
+    },
+    "core:U?": {
+      "at": [
+        37.0,
+        13.5
+      ],
+      "why": "1.2 V LDO above the FPGA's left side"
+    },
+    "esd:U?": {
+      "at": [
+        15.0,
+        12.5
+      ],
+      "why": "ESD clamp right under the receptacle"
+    },
+    "rgb:D?": {
+      "at": [
+        64.0,
+        17.0
+      ],
+      "why": "RGB LED near the FPGA's RGB pins, clear of the Pmods"
+    },
+    "boot:SW?": {
+      "at": [
+        12.0,
+        55.0
+      ],
+      "why": "BOOT along the bottom edge"
+    },
+    "reset:SW?": {
+      "at": [
+        20.0,
+        55.0
+      ],
+      "why": "RESET beside BOOT"
+    },
+    "user:SW?": {
+      "at": [
+        30.0,
+        55.0
+      ],
+      "why": "USER button for the FPGA"
+    },
+    "led_pwr:R?": {
+      "at": [
+        4.5,
+        31.0
+      ],
+      "why": "status LEDs in a column on the left edge"
+    },
+    "led_act:R?": {
+      "at": [
+        4.5,
+        36.0
+      ],
+      "why": "status LEDs in a column on the left edge"
+    },
+    "led_done:R?": {
+      "at": [
+        4.5,
+        41.0
+      ],
+      "why": "status LEDs in a column on the left edge"
+    },
+    "fpga:C8?": {
+      "at": [
+        54.8,
+        34.8
+      ],
+      "why": "VPP_2V5 100 nF on the bottom-right corner diagonal"
+    },
+    "fpga:C4?": {
+      "at": [
+        60.5,
+        39.0
+      ],
+      "why": "VCCPLL 4.7 uF below-right of the FPGA, out of Pmod C's escape; the 100 nF stays at pin 29 (a satellite)"
+    },
+    "fpga:R1?": {
+      "at": [
+        57.5,
+        38.0
+      ],
+      "why": "VCCPLL 100 ohm beside its 4.7 uF, out of Pmod C's escape"
+    }
+  },
+  "route": {
+    "passes": 30,
+    "fanout": true,
+    "solve_s": 600,
+    "via_in_pad_mm": 2.5,
+    "why_via_in_pad": "the iCE40's 5.6 mm and the RP2040's 3.2 mm exposed pads are walled in by 0.5 / 0.4 mm-pitch pins: no 0.15 mm track fits between two pins, so ground reaches them only through a via in the pad (the first run left U6.49 open on every rung)",
+    "why": "the ladder is computed from each rung's opens: narrow the classes that carry an open net to 0.2 mm; the outline is stated, so it is never grown"
+  },
+  "stitch_pitch": 5.0,
+  "silk": {
+    "words": {
+      "boot:SW?": "BOOT",
+      "reset:SW?": "RST",
+      "user:SW?": "USER",
+      "led_pwr:D?": "PWR",
+      "led_act:D?": "ACT",
+      "led_done:D?": "DONE",
+      "rgb:D?": "RGB",
+      "usb:J?": "USB",
+      "pmod_a:J?": "PMOD A",
+      "pmod_b:J?": "PMOD B",
+      "pmod_c:J?": "PMOD C"
+    },
+    "title": [
+      {
+        "text": "Ice Core",
+        "y": 22.0,
+        "size": 1.6,
+        "bold": true
+      },
+      {
+        "text": "iCE40UP5K + RP2040, 6 layers",
+        "y": 25.0,
+        "size": 0.9
+      },
+      {
+        "text": "rev {revision}  heypcb-kicad",
+        "y": 27.2,
+        "size": 0.8
+      },
+      {
+        "text": "pure KiCad 10 + Freerouting",
+        "y": 29.2,
+        "size": 0.8
+      }
+    ]
+  },
+  "captions": {
+    "place_3d": "KiCad's raytracer on the placed board: USB-C and Pmod A on the top edge, Pmod C on the right, Pmod B on the bottom, the RP2040 left and the iCE40UP5K centre-right.",
+    "done_3d": "iCE40UP5K + 8 MB PSRAM + W25Q32, RP2040 programmer, USB-C, AP63203 buck, three Pmod ports, 6 layers."
+  }
+}

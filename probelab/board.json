@@ -1,0 +1,358 @@
+{
+  "name": "probelab",
+  "title": "ProbeLab - 16-channel logic analyzer + 2-channel scope front-end (RP2040)",
+  "revision": "A",
+  "brief": "ProbeLab: a USB-C logic analyzer for sigrok/PulseView (sigrok-pico class firmware). RP2040 with a 12 MHz crystal and a 16 MB W25Q128 QSPI flash, BOOTSEL and RESET buttons, USB-C with USBLC6 ESD, an AP2112K 3.3 V LDO (the RP2040 makes its own 1.1 V core). 16 logic inputs on two 2x10 0.1\" headers (ground on every other pin), each clamped by a USBLC6-4SC6 and fed through 100R into one of two SN74LVC245A buffers that drive GPIO2-GPIO17. Two scope channels on a 1x4 header: AC/DC slide switch, 1M attenuator biased to mid-rail, TLV9061 buffer into the RP2040's own ADC (GPIO26/27). PWR, STAT and ACT LEDs, four M3 holes.",
+  "blocks": [
+    {
+      "block": "probe_rp2040_core",
+      "as": "mcu",
+      "title": "RP2040 + 12 MHz crystal + 1.1 V core",
+      "nets": {
+        "USB_DP": "USB_DP",
+        "USB_DM": "USB_DM",
+        "1V1": "1V1",
+        "BOOTSEL": "BOOTSEL",
+        "RUN": "RUN",
+        "QSPI_SS": "QSPI_SS",
+        "QSPI_SD0": "QSPI_SD0",
+        "QSPI_SD1": "QSPI_SD1",
+        "QSPI_SD2": "QSPI_SD2",
+        "QSPI_SD3": "QSPI_SD3",
+        "QSPI_SCLK": "QSPI_SCLK"
+      },
+      "pinNets": {
+        "U?.4": "LA0",
+        "U?.5": "LA1",
+        "U?.6": "LA2",
+        "U?.7": "LA3",
+        "U?.8": "LA4",
+        "U?.9": "LA5",
+        "U?.11": "LA6",
+        "U?.12": "LA7",
+        "U?.13": "LA8",
+        "U?.14": "LA9",
+        "U?.15": "LA10",
+        "U?.16": "LA11",
+        "U?.17": "LA12",
+        "U?.18": "LA13",
+        "U?.27": "LA14",
+        "U?.28": "LA15",
+        "U?.36": "LED_ACT",
+        "U?.37": "LED_STAT",
+        "U?.38": "ADC0",
+        "U?.39": "ADC1"
+      },
+      "no_connect": [
+        "U?.2", "U?.3", "U?.24", "U?.25", "U?.29", "U?.30", "U?.31", "U?.32",
+        "U?.34", "U?.35", "U?.40", "U?.41"
+      ]
+    },
+    {
+      "block": "probe_qspi_flash",
+      "as": "flash",
+      "title": "W25Q128JV 16 MB QSPI flash",
+      "nets": {
+        "QSPI_SS": "QSPI_SS",
+        "QSPI_SD0": "QSPI_SD0",
+        "QSPI_SD1": "QSPI_SD1",
+        "QSPI_SD2": "QSPI_SD2",
+        "QSPI_SD3": "QSPI_SD3",
+        "QSPI_SCLK": "QSPI_SCLK"
+      }
+    },
+    {
+      "block": "usb_c_data_5v",
+      "as": "usb",
+      "title": "USB-C: 5 V in + USB 2.0 FS data",
+      "nets": {
+        "USB_DP": "USB_DP",
+        "USB_DM": "USB_DM"
+      }
+    },
+    {
+      "block": "usb_esd_usblc6",
+      "as": "esd",
+      "title": "USB ESD clamp",
+      "nets": {
+        "USB_DP": "USB_DP",
+        "USB_DM": "USB_DM"
+      }
+    },
+    {
+      "block": "lipo_ldo_ap2112k",
+      "as": "ldo",
+      "title": "3.3 V LDO (AP2112K-3.3) from VBUS",
+      "nets": {
+        "VBAT": "VBUS"
+      }
+    },
+    {
+      "block": "probe_logic_bank8",
+      "as": "bankA",
+      "title": "Logic inputs D0-D7",
+      "nets": {
+        "Q1": "LA0", "Q2": "LA1", "Q3": "LA2", "Q4": "LA3",
+        "Q5": "LA4", "Q6": "LA5", "Q7": "LA6", "Q8": "LA7"
+      },
+      "silk": ["GND", "D0", "GND", "D1", "GND", "D2", "GND", "D3", "GND", "D4",
+               "GND", "D5", "GND", "D6", "GND", "D7", "GND", "GND", "GND", "GND"]
+    },
+    {
+      "block": "probe_logic_bank8",
+      "as": "bankB",
+      "title": "Logic inputs D8-D15",
+      "nets": {
+        "Q1": "LA8", "Q2": "LA9", "Q3": "LA10", "Q4": "LA11",
+        "Q5": "LA12", "Q6": "LA13", "Q7": "LA14", "Q8": "LA15"
+      },
+      "silk": ["GND", "D8", "GND", "D9", "GND", "D10", "GND", "D11", "GND", "D12",
+               "GND", "D13", "GND", "D14", "GND", "D15", "GND", "GND", "GND", "GND"]
+    },
+    {
+      "block": "probe_scope_frontend",
+      "as": "scope1",
+      "title": "Scope CH1 -> ADC0 (GPIO26)",
+      "nets": {
+        "AIN": "SCOPE1_IN",
+        "ADC": "ADC0"
+      }
+    },
+    {
+      "block": "probe_scope_frontend",
+      "as": "scope2",
+      "title": "Scope CH2 -> ADC1 (GPIO27)",
+      "nets": {
+        "AIN": "SCOPE2_IN",
+        "ADC": "ADC1"
+      }
+    },
+    {
+      "block": "probe_header_1x04",
+      "as": "an_hdr",
+      "title": "Scope inputs (CH1, GND, CH2, GND)",
+      "values": {
+        "J?": "SCOPE"
+      },
+      "pinNets": {
+        "J?.1": "SCOPE1_IN",
+        "J?.2": "GND",
+        "J?.3": "SCOPE2_IN",
+        "J?.4": "GND"
+      },
+      "silk": ["CH1", "GND", "CH2", "GND"]
+    },
+    {
+      "block": "tactile_button",
+      "as": "boot",
+      "title": "BOOTSEL button (QSPI_SS via 1k)",
+      "nets": {
+        "SIG": "BOOTSEL"
+      },
+      "values": {
+        "SW?": "BOOTSEL"
+      }
+    },
+    {
+      "block": "tactile_button",
+      "as": "reset",
+      "title": "RESET button (RUN)",
+      "nets": {
+        "SIG": "RUN"
+      },
+      "values": {
+        "SW?": "RESET"
+      }
+    },
+    {
+      "block": "led_indicator",
+      "as": "led_pwr",
+      "title": "3V3 power LED",
+      "values": {
+        "D?": "Green (PWR)",
+        "R?": "1k"
+      }
+    },
+    {
+      "block": "gpio_led",
+      "as": "led_stat",
+      "title": "STAT LED (GPIO25)",
+      "nets": {
+        "SIG": "LED_STAT"
+      },
+      "values": {
+        "D?": "Red (STAT)"
+      }
+    },
+    {
+      "block": "gpio_led",
+      "as": "led_act",
+      "title": "ACT LED (GPIO24)",
+      "nets": {
+        "SIG": "LED_ACT"
+      },
+      "values": {
+        "D?": "Red (ACT)"
+      }
+    },
+    {
+      "block": "probe_mounting_holes_m3",
+      "as": "holes",
+      "title": "M3 mounting holes"
+    }
+  ],
+  "pwrFlags": [
+    "GND",
+    "VBUS"
+  ],
+  "netClasses": [
+    {
+      "name": "PWR",
+      "nets": [
+        "VBUS"
+      ],
+      "track": 0.4,
+      "clearance": 0.15,
+      "via": [
+        0.6,
+        0.3
+      ],
+      "why": "VBUS (receptacle, LDO, ESD and TVS rail pins: no fine-pitch pins) at 0.4 mm. 3V3 and 1V1 stay at the 0.2 mm default: they land on the RP2040's 0.2 mm QFN pins, and with neckdown off a 0.3 mm class left 6 power-pin connections open on 2026-09-30 until the ladder narrowed it. The board draws well under 150 mA; 0.2 mm carries about 0.5 A on an outer layer (IPC-2221, 10 C rise)"
+    }
+  ],
+  "board": {
+    "width": 58.0,
+    "height": 70.0,
+    "corner_radius": 2.0,
+    "layers": 4,
+    "origin": [
+      100.0,
+      100.0
+    ],
+    "rules": {
+      "clearance": 0.15,
+      "why_clearance": "the RP2040's QFN-56 pins are 0.2 mm wide on a 0.4 mm pitch, so 0.2 mm is pad-to-pad exactly; JLCPCB multilayer builds 0.09 mm spacing",
+      "track": 0.2,
+      "via": [
+        0.6,
+        0.3
+      ],
+      "edge_clearance": 0.5,
+      "hole_to_hole": 0.5,
+      "min_through_hole": 0.2,
+      "why_min_hole": "the RP2040 QFN-56 ThermalVias footprint's own vias are 0.2 mm; JLCPCB multilayer boards drill 0.2 mm",
+      "min_track": 0.1,
+      "why_min_track": "JLCPCB multilayer builds 0.09 mm traces"
+    },
+    "planes": {
+      "In2.Cu": "GND"
+    },
+    "keepouts": [
+      {"name": "pin_labels_D10_D15", "rect": [7.0, 39.8, 10.0, 54.3], "layers": "all", "no": ["vias"],
+       "why": "via-free strip under the D10-D15 pin labels: the silk stage sets each label 1.65 mm inside its signal pad (x 7.19-9.80 for three characters) and never displaces a routed via; on 2026-10-01 router vias at (8.84, 40.29) and (9.53, 51.55) left D10 and D14 unlabelled on both faces. D0-D9 are two characters and end at x 9.04, clear of the vias the router puts beside the TVS pads"}
+    ],
+    "notes": "4 layers: F.Cu / In1 routing / In2 GND plane / B.Cu. The plane is on In2, not In1: measured 2026-09-30 on this placement, Freerouting 2.4.1 left every J2/J3 ground-pin connection open (23-30 opens, all GND, adjacent header pins included) whenever In1 was the Specctra power layer, and closed all of them with In2 as the power layer instead. In2 is a power layer during routing; every pour comes after a measured 0 open."
+  },
+  "placement": {
+    "holes:H1?": {"lock": [3.5, 3.5], "from_center": false, "why": "M3 hole, top-left corner, 3.5 mm in from both edges"},
+    "holes:H2?": {"lock": [54.5, 3.5], "from_center": false, "why": "M3 hole, top-right corner, 3.5 mm in from both edges"},
+    "holes:H3?": {"lock": [3.5, 66.5], "from_center": false, "why": "M3 hole, bottom-left corner, 3.5 mm in from both edges"},
+    "holes:H4?": {"lock": [54.5, 66.5], "from_center": false, "why": "M3 hole, bottom-right corner, 3.5 mm in from both edges: a symmetric 51 x 63 mm pattern on the 58 x 70 mm outline"},
+    "bankA:J?": {"lock": [3.0, 9.0], "from_center": false, "rot": 0,
+                 "why": "D0-D7 header on the left edge, pin 1 at the top; ground row outside, signal row inside; courtyard clears the corner hole"},
+    "bankB:J?": {"lock": [3.0, 35.6], "from_center": false, "rot": 0,
+                 "why": "D8-D15 header on the left edge below D0-D7, courtyards 0.1 mm apart"},
+    "bankA:U2?": {"lock": [11.8, 12.0], "from_center": false, "rot": 0, "why": "TVS for D0-D3 beside the header pins it clamps; its pads start 10.0 mm in, clear of the 3-character pin labels the silk stage sets 1.65 mm inside the signal pads"},
+    "bankA:U3?": {"lock": [11.8, 24.0], "from_center": false, "rot": 0, "why": "TVS for D4-D7, x as for D0-D3 so the front labels fit"},
+    "bankA:U1?": {"lock": [19.5, 20.4], "from_center": false, "rot": 0,
+                  "why": "D0-D7 buffer level with its header, A side facing it, B side facing the RP2040's GPIO2-9"},
+    "bankB:U2?": {"lock": [11.8, 38.6], "from_center": false, "rot": 0, "why": "TVS for D8-D11, x as for D0-D3 so the front labels fit"},
+    "bankB:U3?": {"lock": [11.8, 50.6], "from_center": false, "rot": 0, "why": "TVS for D12-D15, x as for D0-D3 so the front labels fit"},
+    "bankB:U1?": {"lock": [19.5, 47.0], "from_center": false, "rot": 0,
+                  "why": "D8-D15 buffer level with its header, B side facing the RP2040's GPIO10-17 corner"},
+    "mcu:U?": {"lock": [32.0, 34.0], "from_center": false, "rot": 0,
+               "why": "RP2040 at the board's middle: GPIO2-17 face the buffers, QSPI/USB face up, ADC faces the scope channels"},
+    "mcu:C1?": {"lock": [26.6, 31.1], "from_center": false, "rot": 180, "why": "IOVDD pin 1 cap in the top-left corner pocket (GPIO0/1 beside it are unused), pad 1 toward the pin"},
+    "mcu:C2?": {"lock": [26.45, 35.0], "from_center": false, "rot": 180, "why": "IOVDD pin 10 cap level with its pin, pad 1 toward it; the GPIO lines on either side of pin 10 go round it"},
+    "mcu:C12?": {"lock": [31.36, 28.26], "from_center": false, "rot": 90, "why": "DVDD pin 50 (1V1) cap up and left of its pin; with the flash turned, no QSPI line has to cross this spot"},
+    "mcu:C6?": {"lock": [32.37, 28.85], "from_center": false, "rot": 90, "why": "IOVDD pin 49 cap straight above it, pad 1 also over USB_VDD pin 48 (both 3V3)"},
+    "mcu:C7?": {"lock": [33.38, 28.22], "from_center": false, "rot": 90, "why": "USB_VDD pin 48 cap up and right of its pin, as low as the USB lines beside it allow (pin 48 shares C6's pad 1 with pin 49)"},
+    "mcu:C10?": {"lock": [35.05, 28.85], "from_center": false, "rot": 90, "why": "VREG_VOUT (45) 1 uF up and right of its pin, leaving 1.05 mm between its pads and pin 48's cap for the USB lines (0.9 mm, the bare minimum for two, left U1_DM_MCU or VBUS open on 2026-10-01)"},
+    "mcu:C9?": {"lock": [36.07, 28.85], "from_center": false, "rot": 90, "why": "VREG_VIN (44) 1 uF right of pin 45's cap (pins 43 and 44 are both 3V3)"},
+    "mcu:C8?": {"lock": [37.14, 30.35], "from_center": false, "rot": 0, "why": "ADC_AVDD (43) 100 nF in the top-right corner, pad 1 toward the pin"},
+    "mcu:C5?": {"lock": [37.15, 31.4], "from_center": false, "rot": 0, "why": "IOVDD pin 42 cap level with its pin on the unused right side, pad 1 toward it"},
+    "mcu:C4?": {"lock": [37.15, 35.0], "from_center": false, "rot": 0, "why": "IOVDD pin 33 cap level with its pin, below the ADC/LED lines, pad 1 toward it"},
+    "mcu:C3?": {"lock": [32.42, 39.25], "from_center": false, "rot": 270, "why": "IOVDD pin 22 cap under its pin, right of the XOUT line"},
+    "mcu:C11?": {"lock": [33.44, 39.25], "from_center": false, "rot": 270, "why": "DVDD pin 23 (1V1) cap under the unused SWD pins 24/25, beside the pin 22 cap"},
+    "mcu:Y?": {"lock": [30.1, 41.6], "from_center": false, "rot": 270, "why": "crystal under XIN/XOUT, XIN pad top-left"},
+    "mcu:R1?": {"lock": [32.7, 41.8], "from_center": false, "rot": 270, "why": "1k from XOUT down to the crystal's other pad, below the pin 22/23 caps"},
+    "mcu:C13?": {"lock": [27.3, 40.5], "from_center": false, "rot": 180, "why": "15 pF on XIN, left of the crystal"},
+    "mcu:C14?": {"lock": [30.95, 44.8], "from_center": false, "rot": 270, "why": "15 pF on the crystal's XOUT side, under it"},
+    "mcu:R2?": {"lock": [35.6, 25.6], "from_center": false, "rot": 270, "why": "27R on D+ on the way up to the ESD clamp and receptacle"},
+    "mcu:R3?": {"lock": [37.2, 25.6], "from_center": false, "rot": 270, "why": "27R on D-, beside D+"},
+    "mcu:R4?": {"lock": [25.6, 19.0], "from_center": false, "rot": 270, "why": "BOOTSEL 1k left of the flash, so only the slow BOOTSEL net runs to the button"},
+    "mcu:R5?": {"lock": [32.6, 63.6], "from_center": false, "rot": 0, "why": "RUN pull-up beside the RESET button"},
+    "flash:U?": {"lock": [30.0, 20.5], "from_center": false, "rot": 270,
+                 "why": "flash above the QSPI pins, turned so its SD0/SCLK/SD3 pads sit up and left of RP2040 pins 53/52/51 and its SS/SD1/SD2 pads face away from the RP2040: no QSPI line has to cross the space above pins 48-50, which their caps use"},
+    "flash:C?": {"lock": [33.95, 23.4], "from_center": false, "rot": 0, "why": "flash VCC cap beside its VCC pin (bottom right once turned)"},
+    "usb:J?": {"edge": "top", "x": 12.0, "overhang": 0.6, "why": "receptacle on the top edge above the RP2040's USB pins, shell 0.6 mm proud"},
+    "esd:U?": {"lock": [40.0, 12.5], "from_center": false, "rot": 0, "why": "ESD clamp right under the receptacle, between it and the RP2040"},
+    "ldo:U?": {"lock": [47.0, 12.5], "from_center": false, "rot": 0, "why": "LDO beside the receptacle's VBUS pins"},
+    "an_hdr:J?": {"lock": [52.5, 37.82], "from_center": false, "rot": 180,
+                  "why": "scope header on the right edge, pin 1 (CH1) at the bottom beside CH1's front-end"},
+    "scope2:SW?": {"edge": "right", "y": -13.0, "overhang": 0.85, "why": "CH2 AC/DC lever 0.85 mm proud of the right edge, above the scope header"},
+    "scope1:SW?": {"edge": "right", "y": 13.0, "overhang": 0.85, "why": "CH1 AC/DC lever 0.85 mm proud of the right edge, below the scope header"},
+    "scope2:C1?": {"lock": [52.0, 22.0], "from_center": false, "rot": 90, "why": "CH2 coupling cap between the switch's input (pad 1) and common (pad 2) rows, clear of the DC and AC words the silk stage sets beside pads 1 and 3"},
+    "scope1:C1?": {"lock": [52.0, 48.0], "from_center": false, "rot": 90, "why": "CH1 coupling cap, placed as CH2's"},
+    "scope2:U?": {"lock": [44.0, 26.0], "from_center": false, "rot": 0, "why": "CH2 buffer between its switch and ADC1 (pin 39, the upper of the two)"},
+    "scope1:U?": {"lock": [44.0, 42.0], "from_center": false, "rot": 0, "why": "CH1 buffer between its switch and ADC0 (pin 38, the lower of the two)"},
+    "boot:SW?": {"lock": [13.5, 4.0], "from_center": false, "rot": 0, "why": "BOOTSEL on the top edge, near its 1k beside the flash"},
+    "reset:SW?": {"lock": [28.0, 63.6], "from_center": false, "rot": 0, "why": "RESET on the bottom edge, the side of the RP2040 its RUN pin is on"},
+    "led_pwr:R?": {"at": [47.0, 18.0], "why": "power LED near the LDO"},
+    "led_stat:R?": {"at": [42.0, 58.0], "why": "STAT LED on the bottom edge"},
+    "led_act:R?": {"at": [36.0, 58.0], "why": "ACT LED on the bottom edge"}
+  },
+  "route": {
+    "passes": 40,
+    "fanout": true,
+    "solve_s": 420,
+    "why": "the escalation ladder narrows only classes that carry an open net; the outline is stated, so it is never grown"
+  },
+  "stitch_pitch": 5.0,
+  "silk": {
+    "words": {
+      "boot:SW?": "BOOT",
+      "reset:SW?": "RST",
+      "led_pwr:D?": "PWR",
+      "led_stat:D?": "STAT",
+      "led_act:D?": "ACT",
+      "usb:J?": "USB"
+    },
+    "switches": [
+      {
+        "part": "scope1:SW?",
+        "pads": ["1", "3"],
+        "words": {"SCOPE1_IN": "DC"},
+        "else": "AC",
+        "why": "DC beside the throw that shorts the coupling capacitor, AC beside the open throw"
+      },
+      {
+        "part": "scope2:SW?",
+        "pads": ["1", "3"],
+        "words": {"SCOPE2_IN": "DC"},
+        "else": "AC",
+        "why": "DC beside the throw that shorts the coupling capacitor, AC beside the open throw"
+      }
+    ],
+    "title": [
+      {"text": "ProbeLab", "y": 30.0, "size": 1.5, "bold": true},
+      {"text": "16ch logic + 2ch scope", "y": 32.6, "size": 0.8},
+      {"text": "RP2040 / sigrok", "y": 34.6, "size": 0.8},
+      {"text": "rev {revision}  heypcb-kicad", "y": 36.6, "size": 0.8}
+    ]
+  },
+  "captions": {
+    "place_3d": "KiCad's raytracer on the placed board: two 2x10 probe headers on the left edge, USB-C on the top, the scope header and AC/DC switches on the right.",
+    "done_3d": "RP2040 + W25Q128, 16 buffered and clamped logic inputs, 2 scope channels into the RP2040 ADC, USB-C, BOOT/RST, PWR/STAT/ACT."
+  }
+}

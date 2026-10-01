@@ -1,0 +1,648 @@
+{
+  "name": "spinner",
+  "title": "Spinner - FOC BLDC motor controller, STM32G431 + 3 x IR2104 / 60 V MOSFETs, MT6701, CAN FD",
+  "revision": "A",
+  "brief": "Field-oriented-control BLDC motor controller for a 12-24 V bus: STM32G431KBT6 (LQFP-32) with an 8 MHz crystal and SWD on a 1.27 mm 2x5 Cortex header; a three-phase inverter of three IR2104 half-bridge drivers and six BSC028N06LS3 60 V MOSFETs, with a 10 mOhm low-side shunt per phase read by the MCU's internal PGAs; an on-board MT6701 magnetic encoder over SSI; CAN FD through a TCAN332G with two JST-GH ports and a switchable 120 R terminator; SMAJ24A TVS and 2 x 220 uF bulk on the input; AP63203 buck to 3.3 V and a 78L12 gate-drive rail; bus-voltage and NTC sensing; power, status and CAN LEDs; screw terminals for power and the motor; four M3 mounting points.",
+  "blocks": [
+    {
+      "block": "spin_vin_protect",
+      "as": "vin",
+      "title": "Bus input: terminal, TVS, bulk",
+      "silk": [
+        "+12-24V",
+        "-"
+      ]
+    },
+    {
+      "block": "spin_buck_ap63203",
+      "as": "buck",
+      "title": "3.3 V buck (AP63203)",
+      "nets": {
+        "VSUP": "VM_F"
+      }
+    },
+    {
+      "block": "spin_ldo_12v_gate",
+      "as": "ldo",
+      "title": "12 V gate-drive rail (78L12)",
+      "nets": {
+        "VSUP": "VM_F"
+      }
+    },
+    {
+      "block": "spin_mcu_g431k",
+      "as": "mcu",
+      "title": "STM32G431KBT6 + 8 MHz HSE",
+      "nets": {
+        "NRST": "NRST",
+        "DRV_EN": "DRV_EN"
+      },
+      "pinNets": {
+        "U?.5": "VM_SENSE",
+        "U?.6": "ISENSE_U",
+        "U?.8": "TEMP",
+        "U?.9": "ENC_CS",
+        "U?.10": "ENC_CLK",
+        "U?.11": "ENC_DO",
+        "U?.12": "ISENSE_V",
+        "U?.13": "ISENSE_W",
+        "U?.18": "PWM_U",
+        "U?.19": "PWM_V",
+        "U?.20": "PWM_W",
+        "U?.21": "CAN_RX",
+        "U?.22": "CAN_TX",
+        "U?.23": "SWDIO",
+        "U?.24": "SWCLK",
+        "U?.25": "LED_STAT",
+        "U?.26": "SWO",
+        "U?.27": "ENC_MODE",
+        "U?.29": "LED_CAN"
+      },
+      "no_connect": [
+        "U?.7",
+        "U?.30"
+      ]
+    },
+    {
+      "block": "spin_swd_10pin",
+      "as": "swd",
+      "title": "SWD (Cortex 10-pin, 1.27 mm)",
+      "nets": {
+        "SWDIO": "SWDIO",
+        "SWCLK": "SWCLK",
+        "SWO": "SWO",
+        "NRST": "NRST"
+      }
+    },
+    {
+      "block": "spin_halfbridge_ir2104",
+      "as": "hb_u",
+      "title": "Phase U half-bridge",
+      "nets": {
+        "IN": "PWM_U",
+        "EN": "DRV_EN",
+        "PH": "PHASE_U",
+        "LSS": "LSS_U",
+        "ISENSE": "ISENSE_U"
+      }
+    },
+    {
+      "block": "spin_halfbridge_ir2104",
+      "as": "hb_v",
+      "title": "Phase V half-bridge",
+      "nets": {
+        "IN": "PWM_V",
+        "EN": "DRV_EN",
+        "PH": "PHASE_V",
+        "LSS": "LSS_V",
+        "ISENSE": "ISENSE_V"
+      }
+    },
+    {
+      "block": "spin_halfbridge_ir2104",
+      "as": "hb_w",
+      "title": "Phase W half-bridge",
+      "nets": {
+        "IN": "PWM_W",
+        "EN": "DRV_EN",
+        "PH": "PHASE_W",
+        "LSS": "LSS_W",
+        "ISENSE": "ISENSE_W"
+      }
+    },
+    {
+      "block": "spin_phase_terminal",
+      "as": "motor",
+      "title": "Motor terminal U / V / W",
+      "nets": {
+        "U": "PHASE_U",
+        "V": "PHASE_V",
+        "W": "PHASE_W"
+      },
+      "silk": [
+        "U",
+        "V",
+        "W"
+      ]
+    },
+    {
+      "block": "spin_encoder_mt6701",
+      "as": "enc",
+      "title": "MT6701 encoder (SSI)",
+      "nets": {
+        "MODE": "ENC_MODE",
+        "DO": "ENC_DO",
+        "CLK": "ENC_CLK",
+        "CSN": "ENC_CS"
+      }
+    },
+    {
+      "block": "spin_can_tcan332g",
+      "as": "can",
+      "title": "CAN FD (TCAN332G) + terminator",
+      "nets": {
+        "TXD": "CAN_TX",
+        "RXD": "CAN_RX"
+      }
+    },
+    {
+      "block": "spin_sense_vbus_temp",
+      "as": "sense",
+      "title": "Bus voltage + NTC",
+      "nets": {
+        "VSUP": "VM_F",
+        "VSENSE": "VM_SENSE",
+        "TEMP": "TEMP"
+      }
+    },
+    {
+      "block": "led_indicator",
+      "as": "led_pwr",
+      "title": "3V3 power LED",
+      "values": {
+        "D?": "Green (PWR)",
+        "R?": "2.2k"
+      }
+    },
+    {
+      "block": "gpio_led",
+      "as": "led_stat",
+      "title": "Status LED (PA15)",
+      "nets": {
+        "SIG": "LED_STAT"
+      },
+      "values": {
+        "D?": "Red (STAT)"
+      }
+    },
+    {
+      "block": "gpio_led",
+      "as": "led_can",
+      "title": "CAN LED (PB6)",
+      "nets": {
+        "SIG": "LED_CAN"
+      },
+      "values": {
+        "D?": "Orange (CAN)"
+      }
+    },
+    {
+      "block": "spin_mounting_holes",
+      "as": "holes",
+      "title": "M3 mounting points"
+    }
+  ],
+  "pwrFlags": [
+    "GND",
+    "VM",
+    "VM_F",
+    "3V3"
+  ],
+  "netClasses": [
+    {
+      "name": "VMBUS",
+      "nets": [
+        "VM"
+      ],
+      "track": 1.5,
+      "clearance": 0.2,
+      "via": [
+        1.2,
+        0.7
+      ],
+      "currentA": 3.0,
+      "why": "the motor supply. Its own class only for the via: a layer change in VM carries the whole bridge current, and a 0.7 mm drill (25 um plating) carries about 3.4 A at a 10 C rise by IPC-2221, where MOTOR's 0.5 mm carries about 2.7 A. A 1.4/0.8 mm via (3.7 A) left GND and U4_VB open at U4 in 4 of 4 routes (2026-10-01). VM is poured on In2 after routing (board.pours), so any stretch the router lays on In2 sits inside a plane, not a 1.5 mm inner track"
+    },
+    {
+      "name": "MOTOR",
+      "nets": [
+        "PHASE_U",
+        "PHASE_V",
+        "PHASE_W",
+        "LSS_U",
+        "LSS_V",
+        "LSS_W"
+      ],
+      "track": 1.5,
+      "clearance": 0.2,
+      "via": [
+        1.0,
+        0.5
+      ],
+      "currentA": 3.0,
+      "why": "phase and low-side-source copper. 1.5 mm is the widest track that still enters the IR2104's SOIC-8 VS pin and the MOSFETs' source pins next to their gates at 0.2 mm clearance (Freerouting runs without neck-down). IPC-2221 gives about 3.2 A for 1.5 mm of 1 oz outer copper at a 10 C rise, so the class is rated 3 A and is never narrowed"
+    },
+    {
+      "name": "PWR",
+      "nets": [
+        "3V3",
+        "12V",
+        "VM_F"
+      ],
+      "track": 0.4,
+      "clearance": 0.2,
+      "via": [
+        0.6,
+        0.3
+      ],
+      "why": "logic and gate-drive supplies: a few hundred mA at most; 0.4 mm enters the LQFP-32's 0.8 mm-pitch supply pins"
+    }
+  ],
+  "board": {
+    "width": 84.0,
+    "height": 66.0,
+    "corner_radius": 2.0,
+    "layers": 4,
+    "origin": [
+      100.0,
+      100.0
+    ],
+    "rules": {
+      "clearance": 0.2,
+      "track": 0.2,
+      "via": [
+        0.6,
+        0.3
+      ],
+      "edge_clearance": 0.5,
+      "hole_to_hole": 0.5,
+      "min_through_hole": 0.3,
+      "min_track": 0.15,
+      "why_min_track": "every class is 0.2 mm or wider; 0.15 leaves room for Freerouting's rounding"
+    },
+    "planes": {
+      "In1.Cu": "GND"
+    },
+    "pours": {
+      "In2.Cu": "VM"
+    },
+    "notes": "4 layers: F.Cu / In1 GND plane / In2 routing, then a VM pour / B.Cu. In1 is a Specctra power layer during routing; In2 stays a routing layer and gets its VM pour only after a measured 0 open. 3V3 is a few hundred mA and stays on its 0.4 mm tracks."
+  },
+  "placement": {
+    "holes:H1?": {
+      "lock": [
+        4.6,
+        4.6
+      ],
+      "from_center": false,
+      "rot": 0,
+      "why": "M3 hole, top-left corner; locked first so nothing takes a corner"
+    },
+    "holes:H2?": {
+      "lock": [
+        79.4,
+        4.6
+      ],
+      "from_center": false,
+      "rot": 0,
+      "why": "M3 hole, top-right corner"
+    },
+    "holes:H3?": {
+      "lock": [
+        4.6,
+        61.4
+      ],
+      "from_center": false,
+      "rot": 0,
+      "why": "M3 hole, bottom-left corner"
+    },
+    "holes:H4?": {
+      "lock": [
+        79.4,
+        61.4
+      ],
+      "from_center": false,
+      "rot": 0,
+      "why": "M3 hole, bottom-right corner"
+    },
+    "swd:J?": {
+      "lock": [
+        14.0,
+        4.6
+      ],
+      "from_center": false,
+      "rot": 0,
+      "why": "SWD header on the top edge above the MCU's SWD pins"
+    },
+    "mcu:U?": {
+      "lock": [
+        14.0,
+        17.0
+      ],
+      "from_center": false,
+      "rot": 0,
+      "why": "MCU in the logic corner; its right side (PWM, CAN) faces the power stage"
+    },
+    "vin:C1?": {
+      "lock": [
+        33.5,
+        24.0
+      ],
+      "from_center": false,
+      "rot": 90,
+      "why": "bulk capacitor on the bus column, by phases U and V"
+    },
+    "vin:C2?": {
+      "lock": [
+        33.5,
+        42.0
+      ],
+      "from_center": false,
+      "rot": 90,
+      "why": "bulk capacitor on the bus column, by phases V and W"
+    },
+    "motor:J?": {
+      "edge": "right",
+      "y": 0.0,
+      "overhang": 0.0,
+      "why": "motor leads leave the right edge, level with the middle phase"
+    },
+    "vin:J?": {
+      "edge": "bottom",
+      "x": -6.0,
+      "overhang": 0.0,
+      "why": "supply leads leave the bottom edge under the bus column"
+    },
+    "can:J1?": {
+      "lock": [
+        3.6,
+        27.0
+      ],
+      "from_center": false,
+      "rot": 270,
+      "why": "CAN in: GH mouth (the footprint's +y side) turned to face the left edge; the edge rung reads this part's mouth as +x"
+    },
+    "can:J2?": {
+      "lock": [
+        3.6,
+        37.5
+      ],
+      "from_center": false,
+      "rot": 270,
+      "why": "CAN out (daisy chain), below CAN in, mouth to the left edge. 0.5 mm lower than first placed, so its CAN word fits between the two ports (measured 2026-10-01: at y 37 the gap to J4's courtyard was 0.03 mm short, and the transceiver and the switch blocked the other spots)"
+    },
+    "can:SW?": {
+      "lock": [
+        2.6,
+        47.0
+      ],
+      "from_center": false,
+      "rot": 270,
+      "why": "terminator switch, lever (+y at rot 0) 0.85 mm proud of the left edge"
+    },
+    "buck:FB?": {
+      "at": [
+        42.0,
+        57.0
+      ],
+      "why": "ferrite at the input terminal's VM pad, so the 1.5 mm bus copper ends there and only VM_F runs to the regulators"
+    },
+    "can:U?": {
+      "at": [
+        13.0,
+        34.0
+      ],
+      "why": "transceiver between the MCU's FDCAN pins and the CAN ports"
+    },
+    "enc:U?": {
+      "at": [
+        14.0,
+        53.0
+      ],
+      "why": "encoder in the low-profile lower-left area; the motor's magnet goes over it"
+    },
+    "ldo:U?": {
+      "at": [
+        26.0,
+        54.0
+      ],
+      "why": "gate-drive regulator left of the bus corridor"
+    },
+    "buck:U?": {
+      "at": [
+        21.0,
+        60.0
+      ],
+      "why": "buck beside the bus input, away from the encoder"
+    },
+    "vin:D?": {
+      "at": [
+        47.0,
+        61.5
+      ],
+      "rot": 90,
+      "why": "TVS beside the input terminal's bus pad"
+    },
+    "sense:R1?": {
+      "at": [
+        23.0,
+        45.0
+      ],
+      "why": "bus divider on the filtered bus, kept out of the bus corridor between the terminal and C2"
+    },
+    "sense:TH?": {
+      "at": [
+        68.0,
+        59.0
+      ],
+      "why": "NTC at the W low side, clear of the phase corridors to the terminal"
+    },
+    "led_pwr:R?": {
+      "at": [
+        26.0,
+        3.0
+      ],
+      "why": "LEDs along the top edge between the SWD header and the phase U driver"
+    },
+    "led_stat:R?": {
+      "at": [
+        31.0,
+        3.0
+      ],
+      "why": "status LED"
+    },
+    "led_can:R?": {
+      "at": [
+        36.0,
+        3.0
+      ],
+      "why": "CAN LED"
+    },
+    "hb_u:U?": {
+      "lock": [
+        50.2,
+        7.5
+      ],
+      "from_center": false,
+      "rot": 0,
+      "why": "phase U driver above its MOSFETs"
+    },
+    "hb_u:Q1?": {
+      "lock": [
+        45.5,
+        15.0
+      ],
+      "from_center": false,
+      "rot": 180,
+      "why": "U high side: drain pad toward the bus column, source pins toward the low side"
+    },
+    "hb_u:Q2?": {
+      "lock": [
+        54.7,
+        15.0
+      ],
+      "from_center": false,
+      "rot": 180,
+      "why": "U low side: drain pad against the high side's source pins"
+    },
+    "hb_u:R1?": {
+      "lock": [
+        62.0,
+        15.0
+      ],
+      "from_center": false,
+      "rot": 90,
+      "why": "U shunt at the low side's source pins"
+    },
+    "hb_v:U?": {
+      "lock": [
+        50.2,
+        25.5
+      ],
+      "from_center": false,
+      "rot": 0,
+      "why": "phase V driver above its MOSFETs"
+    },
+    "hb_v:Q1?": {
+      "lock": [
+        45.5,
+        33.0
+      ],
+      "from_center": false,
+      "rot": 180,
+      "why": "V high side: drain pad toward the bus column, source pins toward the low side"
+    },
+    "hb_v:Q2?": {
+      "lock": [
+        54.7,
+        33.0
+      ],
+      "from_center": false,
+      "rot": 180,
+      "why": "V low side: drain pad against the high side's source pins"
+    },
+    "hb_v:R1?": {
+      "lock": [
+        62.0,
+        33.0
+      ],
+      "from_center": false,
+      "rot": 90,
+      "why": "V shunt at the low side's source pins"
+    },
+    "hb_w:U?": {
+      "lock": [
+        50.2,
+        43.5
+      ],
+      "from_center": false,
+      "rot": 0,
+      "why": "phase W driver above its MOSFETs"
+    },
+    "hb_w:Q1?": {
+      "lock": [
+        45.5,
+        51.0
+      ],
+      "from_center": false,
+      "rot": 180,
+      "why": "W high side: drain pad toward the bus column, source pins toward the low side"
+    },
+    "hb_w:Q2?": {
+      "lock": [
+        54.7,
+        51.0
+      ],
+      "from_center": false,
+      "rot": 180,
+      "why": "W low side: drain pad against the high side's source pins"
+    },
+    "hb_w:R1?": {
+      "lock": [
+        62.0,
+        51.0
+      ],
+      "from_center": false,
+      "rot": 90,
+      "why": "W shunt at the low side's source pins"
+    }
+  },
+  "route": {
+    "passes": 30,
+    "fanout": true,
+    "solve_s": 600,
+    "why": "the ladder is computed from each rung's opens; MOTOR carries a current budget so it is never narrowed; the outline is stated, so it is never grown"
+  },
+  "stitch_pitch": 5.0,
+  "silk": {
+    "words": {
+      "vin:J?": "12-24V",
+      "motor:J?": "MOTOR",
+      "swd:J?": "SWD",
+      "can:J1?": "CAN",
+      "can:J2?": "CAN",
+      "led_pwr:D?": "PWR",
+      "led_stat:D?": "STAT",
+      "led_can:D?": "CAN",
+      "enc:U?": "ENC"
+    },
+    "switches": [
+      {
+        "part": "can:SW?",
+        "pads": [
+          "1",
+          "3"
+        ],
+        "words": {
+          "CANL": "120R"
+        },
+        "else": "OFF",
+        "why": "120R beside the throw that joins the terminator to CANL, OFF beside the open throw"
+      }
+    ],
+    "polarity": [
+      {
+        "part": "vin:J?",
+        "net": "VM",
+        "why": "J1 pin 1 is the bus (+). Measured 2026-10-01: no mark lands, because every spot the silk stage tries (1.9-2.3 mm from the pad centre) overlaps J1's own 2.8 mm pad. The vin block's silk list labels the pads +12-24V and - on the back instead; on the front J1's own footprint silk blocks those labels"
+      }
+    ],
+    "title": [
+      {
+        "text": "Spinner",
+        "y": 26.0,
+        "size": 1.5,
+        "bold": true
+      },
+      {
+        "text": "FOC BLDC / STM32G431 / CAN FD",
+        "y": 28.6,
+        "size": 0.8
+      },
+      {
+        "text": "rev {revision}  heypcb-kicad",
+        "y": 30.8,
+        "size": 0.8
+      },
+      {
+        "text": "12-24 V, not fabricated",
+        "y": 32.8,
+        "size": 0.8
+      }
+    ]
+  },
+  "captions": {
+    "place_3d": "KiCad's raytracer on the placed board: logic on the left, the three half-bridges stacked on the right with the bus column between them, motor terminal on the right edge.",
+    "done_3d": "STM32G431, 3 x IR2104 + 6 x BSC028N06LS3, 10 mOhm low-side shunts, MT6701, TCAN332G CAN FD, AP63203 3.3 V, 78L12 gate rail."
+  }
+}
