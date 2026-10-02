@@ -13,15 +13,17 @@ being built step by step.
 
 ## The boards
 
-| Board | Layers | Size | Parts | Nets | Connections routed | Vias | DRC errors / unconnected / parity |
-|---|---|---|---|---|---|---|---|
-| [Iron Node](iron-node/) | 4 | 90 x 66 mm | 83 | 57 | 215 -> 0 | 135 | 0 / 0 / 0 |
-| [PD Brick](pd-brick/) | 4 | 100 x 80 mm | 120 | 71 | 283 -> 0 | 208 | 0 / 0 / 0 |
-| [ProbeLab](probelab/) | 4 | 58 x 70 mm | 88 | 84 | 253 -> 0 | 171 | 0 / 0 / 0 |
-| [Spinner](spinner/) | 4 | 84 x 66 mm | 87 | 52 | 205 -> 0 | 167 | 0 / 0 / 0 |
-| [Ice Core](ice-core/) | 6 | 80 x 60 mm | 78 | 73 | 234 -> 0 | 180 | 0 / 0 / 0 |
+| Board | Own repository | Layers | Size | Parts | Nets | Connections routed | Vias | DRC errors / unconnected / parity |
+|---|---|---|---|---|---|---|---|---|
+| [Iron Node](iron-node/) | [enkhbold470/iron-node](https://github.com/enkhbold470/iron-node) | 4 | 90 x 66 mm | 83 | 57 | 215 -> 0 | 135 | 0 / 0 / 0 |
+| [PD Brick](pd-brick/) | [enkhbold470/pd-brick](https://github.com/enkhbold470/pd-brick) | 4 | 100 x 80 mm | 120 | 71 | 283 -> 0 | 208 | 0 / 0 / 0 |
+| [ProbeLab](probelab/) | [enkhbold470/probelab](https://github.com/enkhbold470/probelab) | 4 | 58 x 70 mm | 88 | 84 | 253 -> 0 | 171 | 0 / 0 / 0 |
+| [Spinner](spinner/) | [enkhbold470/spinner](https://github.com/enkhbold470/spinner) | 4 | 84 x 66 mm | 87 | 52 | 205 -> 0 | 167 | 0 / 0 / 0 |
+| [Ice Core](ice-core/) | [enkhbold470/ice-core](https://github.com/enkhbold470/ice-core) | 6 | 80 x 60 mm | 78 | 73 | 234 -> 0 | 180 | 0 / 0 / 0 |
 
 Every number above is read from the board's own `report.json`, written by the run that produced the files.
+Each board is also published as its own repository, with unzipped gerbers in `fab/gerbers/`, for sites that
+import one design per repository.
 
 ## How they were made
 
