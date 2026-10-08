@@ -14,7 +14,7 @@ OUT = Path(sys.argv[1]); OUT.mkdir(parents=True, exist_ok=True)
 
 # ---------------- envelope
 W, H, R_PLAN = 60.0, 102.0, 4.0     # 102 mm leaves 55.5 mm between the boards for a 605050 incl. its PCM
-WALL, FRONT_T, LID_T, CAV = 1.6, 1.2, 1.2, 7.9     # 3.5 mm above the main PCB for the 3.3 mm SKRT side switch
+WALL, FRONT_T, LID_T, CAV = 1.6, 1.2, 1.4, 7.9     # 3.5 mm above the main PCB (3.3 mm SKRT switch); lid 1.4 keeps 0.8 under the ring recess
 Z_LID_IN, Z_FRONT_IN = LID_T, LID_T + CAV
 Z_FRONT_OUT = Z_FRONT_IN + FRONT_T
 IW, IH = W - 2 * WALL, H - 2 * WALL           # 56.8 x 94.8
@@ -32,7 +32,7 @@ ub = lambda x, y: (UB[0] + x, UB[1] + y)
 MAIN_HOLES = [mb(-22.6, -10.6), mb(22.6, -10.6), mb(6.0, 10.6)]
 USB_HOLES = [ub(-9.8, 1.5), ub(9.8, 1.5)]
 MICS = [mb(-6.288, 10.88), mb(11.713, 10.88)]
-LEDS = [(mb(16.605, 11.455), 0.5), (mb(18.3, 11.405), 0.5), (mb(20.0, 11.405), 0.5), (mb(22.6, 11.4), 0.7)]
+LEDS = [(mb(16.605, 11.455), 0.45), (mb(18.3, 11.405), 0.45), (mb(20.0, 11.405), 0.45), (mb(22.6, 11.4), 0.7)]   # 0.8 mm walls between channels
 LED_MAX_H = 0.8             # tallest LED (0603 parts; the XL-1615 RGB is 0.6)
 SW1_Y, SW1_Z = mb(0, 5.0)[1], MB_TOP_Z + 0.7       # MSK12C02 lever (body 1.4 mm)
 SW2_Y, SW2_Z = mb(0, -4.7)[1], MB_TOP_Z + 1.65     # ALPS SKRTLAE010 side-push actuator (body 3.3 mm)
@@ -67,7 +67,7 @@ for (x, y) in LID_BOSSES:   # lid bosses, M2 thread-forming flat heads
 
 for (x, y) in MICS:         # acoustic tube down to the PCB (0.4 mm foam gasket closes the gap) + port
     tube_z0 = MB_TOP_Z + 0.4
-    shell += cyl(x, y, tube_z0, Z_FRONT_IN - tube_z0, 1.2)
+    shell += cyl(x, y, tube_z0, Z_FRONT_IN - tube_z0, 1.3)        # 0.8 mm tube wall
     shell -= cyl(x, y, tube_z0, Z_FRONT_IN - tube_z0, 0.5)
     shell -= cyl(x, y, Z_FRONT_IN - 0.01, FRONT_T + 0.02, 0.5)
 
@@ -85,12 +85,12 @@ shell -= slot((USBC_X, -H / 2 + 0.3, USBC_Z), (1, 0, 0), (0, 1, 0), 12.4, 5.6, 0
 
 # right wall: recessed slot for the slide-switch lever, hole for the button plunger
 shell -= slot((XI + WALL / 2, SW1_Y, SW1_Z), (0, 1, 0), (1, 0, 0), 5.0, 1.6, WALL + 1.0)
-shell -= slot((W / 2 - 0.5, SW1_Y, SW1_Z), (0, 1, 0), (1, 0, 0), 8.0, 3.6, 1.0)
+shell -= slot((W / 2 - 0.4, SW1_Y, SW1_Z), (0, 1, 0), (1, 0, 0), 8.0, 3.6, 0.8)     # leaves 0.8 mm of wall
 shell -= Pos(XI + WALL / 2, SW2_Y, SW2_Z) * Rot(0, 90, 0) * Cylinder(1.1, WALL + 1.0)
-shell -= Pos(XI + 0.125 - 0.05, SW2_Y, SW2_Z) * Rot(0, 90, 0) * Cylinder(1.75, 0.35)       # flange counterbore, floor at XI + 0.25
+shell -= Pos(XI + 0.275, SW2_Y, SW2_Z) * Rot(0, 90, 0) * Cylinder(1.75, 0.75)          # flange counterbore, floor at XI + 0.65
 
 # top-edge groove that receives the lid tongue
-shell -= Pos(0, YI + 0.35, Z_LID_IN + 0.35) * Box(31.0, 0.7 + 0.02, 0.7)
+shell -= Pos(0, YI + 0.25, Z_LID_IN + 0.425) * Box(31.0, 0.52, 0.85)              # groove 0.5 deep, leaves 1.1 mm of wall
 
 # ---------------- lid
 lid = extrude(RectangleRounded(W, H, R_PLAN), amount=LID_T)
@@ -101,7 +101,7 @@ lip = lip_outer - lip_inner
 for (x, y) in LID_BOSSES:
     lip -= cyl(x, y, LID_T, 0.8, 1.85)
 lid += lip
-lid += Pos(0, YI - 0.15 + 0.35, LID_T + 0.275) * Box(29.6, 0.7, 0.55)        # tongue into the shell groove
+lid += Pos(0, YI - 0.15 + 0.3, LID_T + 0.4) * Box(29.6, 0.6, 0.8)            # 0.8 mm tongue into the shell groove
 for (x, y) in LID_BOSSES:                                                     # M2 countersunk holes
     lid -= cyl(x, y, -0.01, LID_T + 0.82, 1.15)
     lid -= Pos(x, y, 0.475) * Cone(2.1, 1.15, 0.95)
@@ -113,9 +113,9 @@ lid -= Pos(0, -31.0, -0.01) * mirror(txt, about=Plane.YZ)                     # 
 
 # ---------------- button plunger (prints separately; drop in from inside before fitting the board)
 fl_x0 = SW2_TIP_X + 0.3         # generous gap: the tip position comes from the footprint outline, not a measured part
-plunger = Pos(fl_x0 + 0.2, SW2_Y, SW2_Z) * Rot(0, 90, 0) * Cylinder(1.55, 0.4)
-stem_len = (W / 2 + 0.9) - (fl_x0 + 0.4)     # 0.9 mm proud of the wall
-plunger += Pos(fl_x0 + 0.4 + stem_len / 2, SW2_Y, SW2_Z) * Rot(0, 90, 0) * Cylinder(1.0, stem_len)
+plunger = Pos(fl_x0 + 0.4, SW2_Y, SW2_Z) * Rot(0, 90, 0) * Cylinder(1.55, 0.8)    # 0.8 mm flange
+stem_len = (W / 2 + 0.9) - (fl_x0 + 0.8)     # 0.9 mm proud of the wall
+plunger += Pos(fl_x0 + 0.8 + stem_len / 2, SW2_Y, SW2_Z) * Rot(0, 90, 0) * Cylinder(1.0, stem_len)
 
 # ---------------- placeholders for the fit check (not for manufacture)
 mpcb = Pos(MB[0], MB[1], MB_TOP_Z - PCB_T) * extrude(RectangleRounded(50, 26, 1.5), amount=PCB_T)
@@ -153,7 +153,7 @@ report["antenna_to_nearest_screw_mm"] = round(min(((x - max(ant[0][0], min(x, an
 report["battery_envelope_mm"] = [round(BAT_L, 2), round(2 * (27.6 - 1.6), 2), round(Z_FRONT_IN - Z_LID_IN - 0.4, 2)]
 report["ffc_entry_to_entry_mm"] = round((MB[1] - 12.727) - (UB[1] + 7.727), 2)
 report["plunger_gap_to_switch_mm"] = round(fl_x0 - SW2_TIP_X, 3)
-report["plunger_free_play_mm"] = round((XI + 0.25) - (fl_x0 + 0.4), 3)
+report["plunger_free_play_mm"] = round((XI + 0.65) - (fl_x0 + 0.8), 3)
 report["baffle_gap_above_pcb_mm"] = round(baf_z0 - MB_TOP_Z, 2)
 report["usbc_mouth_to_outer_face_mm"] = round(H / 2 - 0.3 - 0.6 - (-(UB[1] - 8.427)) + 0.6, 2)
 

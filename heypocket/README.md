@@ -78,7 +78,7 @@ Three parts are printed: the front shell, the back lid, and a button plunger. Or
 in **black SLA resin**: it must be opaque, or the LEDs glow through the 1.2 mm front. Upload the STLs
 in mm. Order 2-3 plungers, since they are tiny.
 
-- **Size:** 60 x 102 x 10.3 mm. 1.6 mm walls, 1.2 mm front and lid. There are 3.5 mm above the main PCB for the 3.3 mm side switch. The battery space between the two boards is 55.5 x 52 x 7.5 mm, which fits a 605050 cell including its protection board (PCM).
+- **Size:** 60 x 102 x 10.5 mm. 1.6 mm walls, 1.2 mm front, 1.4 mm lid; no feature is thinner than 0.8 mm (JLC3DP minimum). There are 3.5 mm above the main PCB for the 3.3 mm side switch. The battery space between the two boards is 55.5 x 52 x 7.5 mm, which fits a 605050 cell including its protection board (PCM).
 - **Front:** two Ø1.0 mm mic ports, each on an acoustic tube that stops 0.4 mm above the PCB, so a foam gasket seals it. Four LED light channels in a baffle block, so the indicators don't bleed into each other, plus a 0.4 mm recessed status bar that you fill with clear UV resin.
 - **Right side:** a recessed slot for the power slide (operated with a fingernail), and a hole for the button plunger. The plunger leaves a 0.3 mm gap to the switch, because the switch's actuator position comes from its footprint outline, not from a measured part: check it on the first print, and sand the flange if the button feels pre-pressed.
 - **Bottom:** a USB-C opening with a relief for the plug overmould.

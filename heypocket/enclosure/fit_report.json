@@ -1,10 +1,10 @@
 {
- "shell_volume_mm3": 11477.1,
- "lid_volume_mm3": 6918.5,
+ "shell_volume_mm3": 11486.7,
+ "lid_volume_mm3": 8139.2,
  "outer_mm": [
   60.0,
   102.0,
-  10.299999999999999
+  10.5
  ],
  "clash_mm3": {},
  "antenna_to_ring_od_mm": 2.61,
