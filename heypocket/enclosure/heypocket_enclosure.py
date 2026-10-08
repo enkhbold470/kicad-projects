@@ -14,7 +14,7 @@ OUT = Path(sys.argv[1]); OUT.mkdir(parents=True, exist_ok=True)
 
 # ---------------- envelope
 W, H, R_PLAN = 60.0, 102.0, 4.0     # 102 mm leaves 55.5 mm between the boards for a 605050 incl. its PCM
-WALL, FRONT_T, LID_T, CAV = 1.6, 1.2, 1.2, 7.0
+WALL, FRONT_T, LID_T, CAV = 1.6, 1.2, 1.2, 7.9     # 3.5 mm above the main PCB for the 3.3 mm SKRT side switch
 Z_LID_IN, Z_FRONT_IN = LID_T, LID_T + CAV
 Z_FRONT_OUT = Z_FRONT_IN + FRONT_T
 IW, IH = W - 2 * WALL, H - 2 * WALL           # 56.8 x 94.8
@@ -22,10 +22,10 @@ XI, YI = IW / 2, IH / 2                         # inner wall at x=+-28.4, y=+-47
 
 # ---------------- boards (board-local mm, Y up) -> enclosure
 MB = (2.4, 35.8)            # main board centre: 1.0 mm from right wall, 0.6 mm from top wall
-MB_TOP_Z = Z_FRONT_IN - 2.6  # PCB top surface (tallest top part, the module, is 2.2 mm)
+MB_TOP_Z = Z_FRONT_IN - 3.5  # PCB top surface (tallest top parts: SKRTLAE010 3.3 mm, E73 module <= 3.0 mm)
 PCB_T = 1.0
 UB = (2.4, -40.773)         # USB board centre: under the FFC, USB-C mouth 0.2 mm inside the wall
-UB_TOP_Z = Z_FRONT_IN - 3.7  # TYPE-C-31-M-12 is 3.26 mm tall
+UB_TOP_Z = Z_FRONT_IN - 4.6  # TYPE-C-31-M-12 is 3.26 mm tall
 mb = lambda x, y: (MB[0] + x, MB[1] + y)
 ub = lambda x, y: (UB[0] + x, UB[1] + y)
 
@@ -35,8 +35,8 @@ MICS = [mb(-6.288, 10.88), mb(11.713, 10.88)]
 LEDS = [(mb(16.605, 11.455), 0.5), (mb(18.3, 11.405), 0.5), (mb(20.0, 11.405), 0.5), (mb(22.6, 11.4), 0.7)]
 LED_MAX_H = 0.8             # tallest LED (0603 parts; the XL-1615 RGB is 0.6)
 SW1_Y, SW1_Z = mb(0, 5.0)[1], MB_TOP_Z + 0.7       # MSK12C02 lever (body 1.4 mm)
-SW2_Y, SW2_Z = mb(0, -4.7)[1], MB_TOP_Z + 0.83     # K2-1114SA actuator (body 1.65 mm)
-SW2_TIP_X = MB[0] + 25.0 + 0.527                   # actuator tip, from the footprint bbox
+SW2_Y, SW2_Z = mb(0, -4.7)[1], MB_TOP_Z + 1.65     # ALPS SKRTLAE010 side-push actuator (body 3.3 mm)
+SW2_TIP_X = MB[0] + 25.35                          # actuator tip, from the footprint outline (0.35 mm past the board edge)
 USBC_X, USBC_Z = ub(0, 0)[0], UB_TOP_Z + 1.63
 LID_BOSSES = [(-27.6, -5.0), (27.6, -5.0), (-25.0, -46.6), (25.0, -46.6)]   # all outside the MagSafe ring
 RING_C, RING_OD, RING_ID = (0.0, 15.5), 56.4, 45.6  # keeps the BLE antenna corner outside the ring
@@ -112,18 +112,18 @@ txt = extrude(Text("HeyPocket", font_size=4.0), amount=0.3) + Pos(0, -5.2) * ext
 lid -= Pos(0, -31.0, -0.01) * mirror(txt, about=Plane.YZ)                     # reads correctly on the back
 
 # ---------------- button plunger (prints separately; drop in from inside before fitting the board)
-fl_x0 = SW2_TIP_X + 0.12
+fl_x0 = SW2_TIP_X + 0.3         # generous gap: the tip position comes from the footprint outline, not a measured part
 plunger = Pos(fl_x0 + 0.2, SW2_Y, SW2_Z) * Rot(0, 90, 0) * Cylinder(1.55, 0.4)
-stem_len = (W / 2 + 0.6) - (fl_x0 + 0.4)
+stem_len = (W / 2 + 0.9) - (fl_x0 + 0.4)     # 0.9 mm proud of the wall
 plunger += Pos(fl_x0 + 0.4 + stem_len / 2, SW2_Y, SW2_Z) * Rot(0, 90, 0) * Cylinder(1.0, stem_len)
 
 # ---------------- placeholders for the fit check (not for manufacture)
 mpcb = Pos(MB[0], MB[1], MB_TOP_Z - PCB_T) * extrude(RectangleRounded(50, 26, 1.5), amount=PCB_T)
-module = Pos(*mb(-19.24, 5.255), MB_TOP_Z + 1.1) * Box(11.17, 15.6, 2.2)
-main_fpc = Pos(*mb(-0.03, -9.14), MB_TOP_Z - PCB_T - 1.0) * Box(10.9, 7.2, 2.0)
+module = Pos(*mb(-17.1, 3.9), MB_TOP_Z + 1.5) * Box(13.0, 18.0, 3.0)          # E73-2G4M08S1C
+main_fpc = Pos(*mb(-0.05, -9.6), MB_TOP_Z - PCB_T - 1.0) * Box(10.0, 6.0, 2.0)   # AFC01-S10FCA-00
 upcb = Pos(UB[0], UB[1], UB_TOP_Z - PCB_T) * extrude(RectangleRounded(24, 16, 1.0), amount=PCB_T)
 usbc = Pos(*ub(0, -4.253), UB_TOP_Z + 1.63) * Box(8.94, 8.35, 3.26)
-usb_fpc = Pos(*ub(0.03, 4.14), UB_TOP_Z - PCB_T - 1.0) * Box(10.9, 7.2, 2.0)
+usb_fpc = Pos(*ub(0.05, 4.6), UB_TOP_Z - PCB_T - 1.0) * Box(10.0, 6.0, 2.0)
 BAT_L = (MB[1] - 13.0) - (UB[1] + 8.0)              # free length between the board edges
 battery = Pos(0, (MB[1] - 13.0 + UB[1] + 8.0) / 2, Z_FRONT_IN - 0.2 - 3.0) * Box(50, BAT_L - 0.5, 6.0)
 motor = cyl(*mb(-17.0, -4.5), MB_TOP_Z - PCB_T - 2.7, 2.7, 5.0)
@@ -145,7 +145,7 @@ for a, b in pairs:
     v = (placeholders[a] & placeholders[b]).volume
     if v > 0.001: report["clash_mm3"][f"{a}~{b}"] = round(v, 3)
 # clearance from the antenna strip to the ring and to every screw
-ant = (mb(-25.0, 9.65), mb(-12.2, 13.0))
+ant = (mb(-23.6, 9.4), mb(-10.6, 12.9))                 # E73 ceramic-antenna end
 nearest = (max(ant[0][0], min(RING_C[0], ant[1][0])), max(ant[0][1], min(RING_C[1], ant[1][1])))
 report["antenna_to_ring_od_mm"] = round(((nearest[0] - RING_C[0]) ** 2 + (nearest[1] - RING_C[1]) ** 2) ** 0.5 - RING_OD / 2, 2)
 report["antenna_to_nearest_screw_mm"] = round(min(((x - max(ant[0][0], min(x, ant[1][0]))) ** 2 + (y - max(ant[0][1], min(y, ant[1][1]))) ** 2) ** 0.5

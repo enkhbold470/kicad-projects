@@ -1,6 +1,6 @@
 Designator,Device,Footprint,Mid X,Mid Y,Ref X,Ref Y,Pad X,Pad Y,Pins,Layer,Rotation,SMD,Comment,Value,Type,Supplier,Datasheet
 D1,USBLC6-2SC6_C2687116,SOT-23-6_L2.9-W1.6-P0.95-LS2.8-BL,0mm,4.36mm,0mm,4.36mm,-1.149mm,5.31mm,6,T,270,Yes,USBLC6-2SC6,,ESD,LCSC,https://item.szlcsc.com/datasheet/USBLC6-2SC6/2790619.html
 J1,TYPE-C-31-M-12,USB-C_SMD-TYPE-C-31-M-12_1,0mm,-3.206mm,0mm,-3.206mm,4.325mm,-1.5mm,16,T,0,No,TYPE-C-31-M-12,,,LCSC,https://item.szlcsc.com/datasheet/TYPE-C-31-M-12/177331.html
-J2,AFC07-S10FCA-00,FPC-SMD_P0.50-10P_LCS-SJ-H2.0,0.05mm,2.235mm,0.05mm,2.235mm,-2.2mm,1.15mm,12,B,180,Yes,AFC07-S10FCA-00,,,LCSC,https://item.szlcsc.com/datasheet/AFC07-S10FCA-00/253866.html
-R1,0402WGF5101TCE,R0402,-0.649mm,1.5mm,-0.649mm,1.5mm,-0.649mm,1.067mm,2,T,90,Yes,5.1kΩ,5.1kΩ,Thick Film Resistor,LCSC,https://item.szlcsc.com/datasheet/0402WGF5101TCE/26648.html
-R2,0402WGF5101TCE,R0402,0.649mm,1.5mm,0.649mm,1.5mm,0.649mm,1.067mm,2,T,90,Yes,5.1kΩ,5.1kΩ,Thick Film Resistor,LCSC,https://item.szlcsc.com/datasheet/0402WGF5101TCE/26648.html
+R1,0402WGF5101TCE,R0402,-1.5mm,1.5mm,-1.5mm,1.5mm,-1.5mm,1.067mm,2,T,90,Yes,5.1kΩ,5.1kΩ,Thick Film Resistor,LCSC,https://item.szlcsc.com/datasheet/0402WGF5101TCE/26648.html
+R2,0402WGF5101TCE,R0402,1.75mm,1.5mm,1.75mm,1.5mm,1.75mm,1.067mm,2,T,90,Yes,5.1kΩ,5.1kΩ,Thick Film Resistor,LCSC,https://item.szlcsc.com/datasheet/0402WGF5101TCE/26648.html
+J2,AFC01-S10FCA-00,FPC-SMD_P0.5-10P_FGS-XJ-H2.0,0.05mm,3.64mm,0.05mm,3.64mm,2.3mm,2.302mm,12,B,180,Yes,AFC01-S10FCA-00,,,LCSC,https://item.szlcsc.com/datasheet/AFC01-S10FCA-00/253918.html

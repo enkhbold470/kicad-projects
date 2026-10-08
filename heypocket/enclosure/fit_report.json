@@ -1,22 +1,22 @@
 {
- "shell_volume_mm3": 10936.0,
+ "shell_volume_mm3": 11477.1,
  "lid_volume_mm3": 6918.5,
  "outer_mm": [
   60.0,
   102.0,
-  9.399999999999999
+  10.299999999999999
  ],
  "clash_mm3": {},
- "antenna_to_ring_od_mm": 3.31,
- "antenna_to_nearest_screw_mm": 18.2,
+ "antenna_to_ring_od_mm": 2.61,
+ "antenna_to_nearest_screw_mm": 16.6,
  "battery_envelope_mm": [
   55.57,
   52.0,
-  6.6
+  7.5
  ],
  "ffc_entry_to_entry_mm": 56.12,
- "plunger_gap_to_switch_mm": 0.12,
- "plunger_free_play_mm": 0.203,
+ "plunger_gap_to_switch_mm": 0.3,
+ "plunger_free_play_mm": 0.2,
  "baffle_gap_above_pcb_mm": 0.95,
  "usbc_mouth_to_outer_face_mm": 1.5
 }
