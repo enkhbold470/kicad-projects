@@ -76,7 +76,11 @@ basic parts.
 
 Three parts are printed: the front shell, the back lid, and a button plunger. Order them from JLC3DP
 in **black SLA resin**: it must be opaque, or the LEDs glow through the 1.2 mm front. Upload the STLs
-in mm. Order 2-3 plungers, since they are tiny.
+in mm. For the plunger, upload `heypocket_button_plunger_x4.stl`: four plungers on a snap-off bar,
+because JLC3DP won't print the single 3 mm part (minimum 2 x 2 x 10 mm). JLC3DP doesn't sand parts
+under 1 cm³, so order it without surface finish, then clip the plungers off flush at the flange rim.
+JLC3DP flags the lid for thin walls: the 0.8 mm floor under the MagSafe ring and magnet recesses is
+below its 1.2 mm wall guideline, but still at its 0.8 mm minimum.
 
 - **Size:** 60 x 102 x 10.5 mm. 1.6 mm walls, 1.2 mm front, 1.4 mm lid; no feature is thinner than 0.8 mm (JLC3DP minimum). There are 3.5 mm above the main PCB for the 3.3 mm side switch. The battery space between the two boards is 55.5 x 52 x 7.5 mm, which fits a 605050 cell including its protection board (PCM).
 - **Front:** two Ø1.0 mm mic ports, each on an acoustic tube that stops 0.4 mm above the PCB, so a foam gasket seals it. Four LED light channels in a baffle block, so the indicators don't bleed into each other, plus a 0.4 mm recessed status bar that you fill with clear UV resin.

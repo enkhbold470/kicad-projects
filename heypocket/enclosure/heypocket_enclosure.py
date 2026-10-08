@@ -117,6 +117,14 @@ plunger = Pos(fl_x0 + 0.4, SW2_Y, SW2_Z) * Rot(0, 90, 0) * Cylinder(1.55, 0.8)  
 stem_len = (W / 2 + 0.9) - (fl_x0 + 0.8)     # 0.9 mm proud of the wall
 plunger += Pos(fl_x0 + 0.8 + stem_len / 2, SW2_Y, SW2_Z) * Rot(0, 90, 0) * Cylinder(1.0, stem_len)
 
+# JLC3DP won't print parts under 2 x 2 x 10 mm, so the plunger ships as four copies on a snap-off bar
+PL_N, PL_PITCH = 4, 5.0
+plunger_x4 = Pos(PL_PITCH * (PL_N - 1) / 2, -3.55, 1.0) * Box(PL_PITCH * (PL_N - 1) + 2.0, 2.0, 2.0)
+for i in range(PL_N):
+    x = i * PL_PITCH
+    plunger_x4 += Pos(x, 0, 0.4) * Cylinder(1.55, 0.8) + Pos(x, 0, 0.8 + stem_len / 2) * Cylinder(1.0, stem_len)
+    plunger_x4 += Pos(x, -2.0, 0.4) * Box(0.8, 1.4, 0.8)    # 0.8 mm gate on the flange rim; the rim sits in a 0.2 mm counterbore gap
+
 # ---------------- placeholders for the fit check (not for manufacture)
 mpcb = Pos(MB[0], MB[1], MB_TOP_Z - PCB_T) * extrude(RectangleRounded(50, 26, 1.5), amount=PCB_T)
 module = Pos(*mb(-17.1, 3.9), MB_TOP_Z + 1.5) * Box(13.0, 18.0, 3.0)          # E73-2G4M08S1C
@@ -158,7 +166,8 @@ report["baffle_gap_above_pcb_mm"] = round(baf_z0 - MB_TOP_Z, 2)
 report["usbc_mouth_to_outer_face_mm"] = round(H / 2 - 0.3 - 0.6 - (-(UB[1] - 8.427)) + 0.6, 2)
 
 # ---------------- export
-for name, part in (("heypocket_shell", shell), ("heypocket_lid", lid), ("heypocket_button_plunger", plunger)):
+for name, part in (("heypocket_shell", shell), ("heypocket_lid", lid), ("heypocket_button_plunger", plunger),
+                   ("heypocket_button_plunger_x4", plunger_x4)):
     export_step(part, str(OUT / f"{name}.step"))
     export_stl(part, str(OUT / f"{name}.stl"), tolerance=0.01, angular_tolerance=0.15)
 asm = Compound(children=[shell, lid, plunger] + list(placeholders.values())[:-1], label="heypocket_assembly")
